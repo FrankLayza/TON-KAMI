@@ -50,9 +50,9 @@ const Navbar = () => {
     <div className="p-3 flex justify-between items-center shadow-md">
       <div className="flex items-center">
         <IoWalletSharp className="text-[#3390ec]" />
-        <h1 className="font-semibold px-2 text-[24px]">TON MicroPay Wallet</h1>
+        <h1 className="font-semibold px-2 text-[14px] md:text-[24px]">TON MicroPay Wallet</h1>
       </div>
-      <TonConnectButton />
+      <TonConnectButton className="" />
     </div>
   );
 };
