@@ -3,13 +3,12 @@ import { IoWalletSharp } from "react-icons/io5";
 import { useTonContext } from "../context/TonContext";
 import {
   TonConnectButton,
-  useTonAddress,
   useTonWallet,
 } from "@tonconnect/ui-react";
-import { getWalletBalance } from "../services/TonServices";
+import { getWalletBalance, getTransactions } from "../services/TonServices";
 
 const Navbar = () => {
-  const { setBalance } = useTonContext();
+  const { setBalance, setTrxHistory } = useTonContext();
   const wallet = useTonWallet();
 
   useEffect(() => {
@@ -22,12 +21,29 @@ const Navbar = () => {
             : 0;
           setBalance(balance);
         } catch (error) {
-          console.error("Error fetching balance:", error);
+          console.error("Error fetching user's balance:", error);
+          setBalance(0);
         }
+      }
+    };
+    const fetchHistory = async () => {
+      try {
+        const trxHistory = await getTransactions(address);
+        if (!trxHistory || !trxHistory.events) {
+          console.log("Invalid transaction history response");
+          setTrxHistory([]);
+        } else {
+          setTrxHistory(trxHistory.events);
+        }
+      } catch (error) {
+        console.error("Error fetching transaction history:", error);
+
+        setTrxHistory([]);
       }
     };
 
     fetchBalance();
+    fetchHistory();
   }, [wallet, setBalance]);
 
   return (
