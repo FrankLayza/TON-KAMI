@@ -8,7 +8,7 @@ import App from "./App.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <TonContextProvider>
-      <TonConnectUIProvider manifestUrl="/manifest.json">
+      <TonConnectUIProvider manifestUrl="https://ton-kami.vercel.app/tonconnect-manifest.json">
         <App />
       </TonConnectUIProvider>
     </TonContextProvider>
