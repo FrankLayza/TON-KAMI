@@ -23,9 +23,7 @@ const Navbar = () => {
           Connect Wallet
         </button> */}
         <TonConnectButton />
-        {address && (<div>
-          {address.slice(0,6)}
-          </div>)}
+       
       </div>
     </>
   );
