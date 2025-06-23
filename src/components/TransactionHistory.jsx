@@ -11,7 +11,7 @@ const TransactionHistory = () => {
           <p>Transaction History</p>
         </div>
 
-        <div className="flex items-center justify-between my-3 text-sm pt-4">
+        <div className="flex items-center justify-between my-3 text-[#9cb4d5] text-sm pt-4">
           <p>VALUE</p>
           <p>DATE</p>
           <p>TYPE</p>
@@ -33,7 +33,7 @@ const TransactionHistory = () => {
               return ton ? (
                 <div
                   key={`${eventIdx}-${actionIdx}`}
-                  className="flex items-center justify-between my-3 text-sm"
+                  className="flex items-center justify-between my-3 text-xs bg-[#eceeee] rounded p-2"
                 >
                   <p>{amount} TON</p>
                   <p>{date}</p>

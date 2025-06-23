@@ -13,22 +13,31 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchBalance = async () => {
-      if (wallet?.account?.address) {
-        try {
-          const response = await getWalletBalance(wallet.account.address);
-          const balance = response?.balance
-            ? (response.balance / 1e9).toFixed(9)
-            : 0;
-          setBalance(balance);
-        } catch (error) {
-          console.error("Error fetching user's balance:", error);
-          setBalance(0);
-        }
+      if (!wallet || !wallet.account?.address) {
+        setBalance(0);
+        return;
+      }
+
+      try {
+        const response = await getWalletBalance(wallet.account.address);
+        const balance = response?.balance
+          ? (response.balance / 1e9).toFixed(9)
+          : 0;
+        setBalance(balance);
+      } catch (error) {
+        console.error("Error fetching user's balance:", error);
+        setBalance(0);
       }
     };
+
     const fetchHistory = async () => {
+      if (!wallet || !wallet.account?.address) {
+        setTrxHistory([]);
+        return;
+      }
+
       try {
-        const trxHistory = await getTransactions(address);
+        const trxHistory = await getTransactions(wallet.account.address);
         if (!trxHistory || !trxHistory.events) {
           console.log("Invalid transaction history response");
           setTrxHistory([]);
@@ -37,22 +46,21 @@ const Navbar = () => {
         }
       } catch (error) {
         console.error("Error fetching transaction history:", error);
-
         setTrxHistory([]);
       }
     };
 
     fetchBalance();
     fetchHistory();
-  }, [wallet, setBalance]);
-
+  }, [wallet, setBalance, setTrxHistory]);
+  
   return (
     <div className="p-3 flex justify-between items-center shadow-md">
       <div className="flex items-center">
         <IoWalletSharp className="text-[#3390ec]" />
-        <h1 className="font-semibold px-2 text-[14px] md:text-[24px]">TON MicroPay Wallet</h1>
+        <h1 className="font-semibold px-2 text-[12px] md:text-[24px]">TON MicroPay Wallet</h1>
       </div>
-      <TonConnectButton className="" />
+      <TonConnectButton className="text-xs" />
     </div>
   );
 };
