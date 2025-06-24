@@ -3,6 +3,9 @@ const TelegramBot = require("node-telegram-bot-api");
 const { getWallet, getUsers } = require("./services/userStore");
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const registerCommand = require("./commands/register");
+const fs = require("fs");
+const path = require("path");
+const filePath = path.join(__dirname, "services/data/users.json");
 
 const bot = new TelegramBot(token, { polling: true });
 bot.onText(/\/start/, (msg) => {
@@ -13,6 +16,23 @@ bot.onText(/\/start/, (msg) => {
 });
 bot.onText(/\/register/, (msg) => {
   registerCommand(bot, msg);
+});
+bot.onText(/\/app/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, "🚀 Open the TON Micro-pay", {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "🧩 Open Mini App",
+            web_app: {
+              url: "https://ton-kami.vercel.app/", // <-- Use your HTTPS web app URL here
+            },
+          },
+        ],
+      ],
+    },
+  });
 });
 bot.onText(/\/menu/, (msg) => {
   const chatId = msg.chat.id;
@@ -62,6 +82,34 @@ bot.on("callback_query", async (query) => {
       bot.sendMessage(chatId, "Send your *new* TON wallet address to update.", {
         parse_mode: "Markdown",
       });
+      bot.once("message", (msg) => {
+        if (msg.from.username !== username) {
+          bot.sendMessage(
+            chatId,
+            "Please send the update from your own account."
+          );
+          return;
+        }
+        const newWallet = msg.text.trim();
+        const users = getUsers();
+        if (users[`@${username}`]) {
+          fs.writeFileSync(
+            filePath,
+            JSON.stringify(
+              {
+                ...users,
+                [`@${username}`]: newWallet,
+              },
+              null,
+              2
+            )
+          );
+        }
+        bot.sendMessage(
+          chatId,
+          `✅ Your wallet has been updated to: ${newWallet}`
+        );
+      });
       break;
 
     case "delete":
@@ -81,4 +129,3 @@ bot.on("callback_query", async (query) => {
   }
   bot.answerCallbackQuery(query.id);
 });
-

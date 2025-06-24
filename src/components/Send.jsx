@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { GoArrowUpRight } from "react-icons/go";
+import { toast } from "react-toastify";
+import { motion } from "motion/react";
 import { useTonAddress, useTonConnectUI } from "@tonconnect/ui-react";
 
 const SendTon = () => {
@@ -7,7 +9,6 @@ const SendTon = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [recipient, setRecipient] = useState("");
   const [tonConnectUI, setOptions] = useTonConnectUI();
-  const address = useTonAddress();
 
   const handleAmountChange = (e) => {
     let value = parseFloat(e.target.value);
@@ -36,6 +37,7 @@ const SendTon = () => {
       ],
     };
     tonConnectUI.sendTransaction(transact);
+    toast.success("Transaction sent successfully!");
   };
   return (
     <>
@@ -65,32 +67,49 @@ const SendTon = () => {
         </div>
 
         <div className="flex items-center">
-          <button
+          <motion.button
+            whileHover={{
+              backgroundColor: "#3390ec",
+              scale: 1.02,
+              color: "white",
+            }}
             onClick={() => setAmount(0.01)}
             className="cursor-pointer px-3 py-1 border border-gray-300 mr-1"
           >
             0.01 TON
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{
+              backgroundColor: "#3390ec",
+              scale: 1.02,
+              color: "white",
+            }}
             onClick={() => setAmount(0.05)}
             className="cursor-pointer px-3 py-1 border-gray-300 border mx-1"
           >
             0.05 TON
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{
+              backgroundColor: "#3390ec",
+              scale: 1.02,
+              color: "white",
+            }}
             onClick={() => setAmount(0.1)}
             className="cursor-pointer px-3 py-1 border-gray-300 border mx-1"
           >
             0.1 TON
-          </button>
+          </motion.button>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleSend}
           className="cursor-pointer bg-[#3390ec] text-white font-semibold w-full my-3 py-2 rounded-lg"
         >
           Send TIP
-        </button>
+        </motion.button>
       </div>
     </>
   );

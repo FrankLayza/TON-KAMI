@@ -3,7 +3,8 @@ import Navbar from "./components/Navbar";
 import SendTon from "./components/Send";
 import TransactionHistory from "./components/TransactionHistory";
 import WalletInput from "./components/WalletInput";
-
+import { ToastContainer, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <>
@@ -18,6 +19,20 @@ function App() {
           <TransactionHistory />
         </div>
       </div>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </>
   );
 }
