@@ -15,7 +15,7 @@ async function saveUser(username, wallet) {
 }
 
 async function getWallet(username) {
-  const user = await Users.findOne({ username });
+  const user = await Users.findOne({ username: username.toLowerCase() });
   return user ? user.wallet : null;
 }
 

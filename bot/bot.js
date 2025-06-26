@@ -76,6 +76,7 @@ bot.onText(/\/menu/, (msg) => {
   });
 });
 
+console.log('type of checkbalance:', typeof checkBalance);
 //the checkBalance command
 bot.onText(/\/balance/, async (msg) => {
   const chat = msg.chat.id;
@@ -138,7 +139,6 @@ bot.onText(/\/send\s+@(\w+)\s+([\d.]+)/, async (msg, match) => {
       chatId,
       `🔗 Click below to send *${amount} TON* to @${recipient}:`,
       {
-        parse_mode: "Markdown",
         reply_markup: {
           inline_keyboard: [
             [

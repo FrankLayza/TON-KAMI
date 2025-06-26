@@ -51,7 +51,7 @@ module.exports = (bot, msg) => {
         );
         return;
       }
-
+      console.log(`saving wallet for user: ${username}`);
       await saveUser(username, wallet);
       bot.sendMessage(
         chatId,
