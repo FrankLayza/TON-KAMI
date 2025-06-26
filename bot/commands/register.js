@@ -61,7 +61,7 @@ module.exports = (bot, msg) => {
       console.error("❌ Error saving user:", error);
       bot.sendMessage(
         chatId,
-        "❌ Something went wrong while saving your wallet. Please try again later."
+        "❌ Something went wrong while saving your wallet. Please try again later." + error
       );
     }
   });
