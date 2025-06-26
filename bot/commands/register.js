@@ -58,7 +58,7 @@ module.exports = (bot, msg) => {
         `✅ Wallet address registered successfully for @${username}:\n\n${wallet}`
       );
     } catch (error) {
-      console.error("❌ Error saving user:", error.message);
+      console.error("❌ Error saving user:", error);
       bot.sendMessage(
         chatId,
         "❌ Something went wrong while saving your wallet. Please try again later."
