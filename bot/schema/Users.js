@@ -1,20 +1,24 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     username: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
     },
     displayName: {
-        type: String,
+      type: String,
     },
     wallet: {
-       type: String,
-        required: true,
-        unique: true,
-    }
-}, { timestamps: true });
+      type: String,
+      required: true,
+      unique: true,
+    },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Users', userSchema);
+// Force model to use 'users' collection explicitly
+module.exports = mongoose.model("User", userSchema, "users");

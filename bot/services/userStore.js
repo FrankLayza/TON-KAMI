@@ -1,8 +1,8 @@
-const Users = require("../schema/Users");
+const User = require("../schema/Users"); // Changed from Users to User
 
 async function saveUser(username, wallet) {
   try {
-    const user = await Users.findOneAndUpdate(
+    const user = await User.findOneAndUpdate(
       { username: username.toLowerCase() },
       { $set: { wallet, displayName: username } },
       { upsert: true, new: true }
@@ -15,15 +15,14 @@ async function saveUser(username, wallet) {
 }
 
 async function getWallet(username) {
-  const user = await Users.findOne({ username: username.toLowerCase() });
+  const user = await User.findOne({ username: username.toLowerCase() });
   return user ? user.wallet : null;
 }
 
 async function walletExists(wallet) {
-  return await Users.exists({ wallet });
+  return await User.exists({ wallet });
 }
 async function deleteWallet(username) {
-  return await Users.findOneAndDelete({ username: username.toLowerCase() });
+  return await User.findOneAndDelete({ username: username.toLowerCase() });
 }
 module.exports = { saveUser, getWallet, walletExists, deleteWallet };
-
