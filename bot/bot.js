@@ -1,5 +1,5 @@
 require("dotenv").config();
-const connectDB = require("./data/db");
+const connectDB = require("./services/data/db");
 connectDB()
 const TelegramBot = require("node-telegram-bot-api");
 const { getWallet,saveUser, deleteWallet } = require("./services/userStore");
