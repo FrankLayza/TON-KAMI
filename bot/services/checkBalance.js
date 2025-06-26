@@ -9,7 +9,7 @@ async function checkBalance(username) {
   console.log(userWallet);
   const result = await getWalletBalance(userWallet);
   console.log(result.balance / 1e9);
-  return result.balance; // Return just the balance value
+  return (result.balance / 1e9).toFixed(9); // Return just the balance value
 }
 
 module.exports = { checkBalance };

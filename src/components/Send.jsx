@@ -1,15 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { toast } from "react-toastify";
 import { motion } from "motion/react";
-import { useTonAddress, useTonConnectUI } from "@tonconnect/ui-react";
+import { useTonConnectUI } from "@tonconnect/ui-react";
 
 const SendTon = () => {
   const [amount, setAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [recipient, setRecipient] = useState("");
-  const [tonConnectUI, setOptions] = useTonConnectUI();
+  const [tonConnectUI] = useTonConnectUI();
 
+  useEffect(() => { 
+    const params = new URLSearchParams(window.location.search);
+    const recipientParam = params.get("recipient");
+    const amountParam = params.get("amount");
+
+    if(recipientParam) {
+      setRecipient(recipientParam);
+    }
+    if(amountParam && !isNaN(amountParam)) {
+      const parsedAmount = parseFloat(amountParam);
+      if(parsedAmount > 0 && parsedAmount <= 0.1) {
+        setAmount(parsedAmount);
+      } else {
+        setAmount(0.01); 
+      }
+    }
+  }, [])
   const handleAmountChange = (e) => {
     let value = parseFloat(e.target.value);
     if (isNaN(value)) value = 0;
@@ -54,6 +71,9 @@ const SendTon = () => {
             type="text"
             placeholder="Recipient TON Wallet Address"
             className="bg-white w-full mb-4 px-3 py-1 my-2 text-black placeholder:text-sm outline-none border-gray-200 border rounded  focus:ring-2 focus:ring-[#3390ec]"
+            readOnly={
+              !!new URLSearchParams(window.location.search).get("recipient")
+            }
           />
           <input
             type="number"
@@ -63,6 +83,9 @@ const SendTon = () => {
             max={0.1}
             placeholder="Amount (Max 1 TON)"
             className="bg-white w-full mb-4 px-3 py-1 my-2 text-black placeholder:text-sm outline-none rounded border-gray-200 border  focus:ring-2 focus:ring-[#3390ec]"
+            readOnly={
+              !!new URLSearchParams(window.location.search).get("amount")
+            }
           />
         </div>
 

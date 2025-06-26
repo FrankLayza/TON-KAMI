@@ -1,5 +1,4 @@
-// bot/services/tonApi.js (new file or in your bot.js)
-const fetch = require("node-fetch"); // or global fetch in Node 18+
+const fetch = require("node-fetch");
 const TON_URL = process.env.VITE_TON_API_URL;
 const TON_API_KEY = process.env.VITE_TON_API_KEY;
 

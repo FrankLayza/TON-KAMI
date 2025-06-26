@@ -1,21 +1,24 @@
 require("dotenv").config();
+const connectDB = require("./data/db");
+connectDB()
 const TelegramBot = require("node-telegram-bot-api");
-const { getWallet, getUsers } = require("./services/userStore");
+const { getWallet,saveUser, deleteWallet } = require("./services/userStore");
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const registerCommand = require("./commands/register");
 const checkBalance = require("./services/checkBalance");
-const fs = require("fs");
-const path = require("path");
-const filePath = path.join(__dirname, "services/data/users.json");
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => { res.send('TONKAMI is live') })
-app.get("/health", (req, res) => { res.send('TONKAMI is healthy') })
+app.get("/", (req, res) => {
+  res.send("TONKAMI is live");
+});
+app.get("/health", (req, res) => {
+  res.send("TONKAMI is healthy");
+});
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-})
+});
 
 const bot = new TelegramBot(token, { polling: true });
 bot.onText(/\/start/, (msg) => {
@@ -39,7 +42,7 @@ bot.onText(/\/app/, (msg) => {
           {
             text: "🧩 Open Mini App",
             web_app: {
-              url: "https://ton-kami.vercel.app/", // <-- Use your HTTPS web app URL here
+              url: "https://ton-kami.vercel.app/",
             },
           },
         ],
@@ -86,15 +89,71 @@ bot.onText(/\/balance/, async (msg) => {
       );
       return;
     }
-    const res = await checkBalance(`@${username}`);
-    bot.sendMessage(
-      chat,
-      "Your wallet balance is: " + (res / 1e9).toFixed(4) + " TON"
-    );
+    const res = await checkBalance(`${username}`);
+    bot.sendMessage(chat, "Your wallet balance is: " + res + " TON");
   } catch (error) {
     console.error("Error checking balance:", error);
     bot.sendMessage(chat, "❌ Error checking balance. Please try again later.");
     return;
+  }
+});
+
+//the send command
+bot.onText(/\/send\s+@(\w+)\s+([\d.]+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const senderUsername = msg.from.username;
+  const recipient = match[1];
+  const amount = parseFloat(match[2]);
+
+  try {
+    if (!senderUsername) {
+      bot.sendMessage(
+        chatId,
+        "❌ Please set a username in your Telegram settings."
+      );
+      return;
+    }
+
+    if (!recipient || isNaN(amount) || amount <= 0) {
+      bot.sendMessage(
+        chatId,
+        "❌ Invalid command format. Use /send @username amount"
+      );
+      return;
+    }
+
+    const recipientWallet = await getWallet(recipient);
+    if (!recipientWallet) {
+      bot.sendMessage(
+        chatId,
+        `❌ No wallet found for user @${recipient}. Please ask them to register their wallet using /register.`
+      );
+      return;
+    }
+
+    const miniAppUrl = "https://ton-kami.vercel.app/";
+    const transactionUrl = `${miniAppUrl}?recipient=${recipientWallet}&amount=${amount}&from=${senderUsername}`;
+
+    bot.sendMessage(
+      chatId,
+      `🔗 Click below to send *${amount} TON* to @${recipient}:`,
+      {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "🚀 Confirm Transaction",
+                web_app: { url: transactionUrl },
+              },
+            ],
+          ],
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Error processing /send command:", error);
+    bot.sendMessage(chatId, "❌ Something went wrong. Try again later.");
   }
 });
 
@@ -113,7 +172,7 @@ bot.on("callback_query", async (query) => {
       break;
 
     case "view":
-      const wallet = getWallet(username);
+      const wallet = await getWallet(username);
       bot.sendMessage(
         chatId,
         wallet ? `💼 Your wallet: ${wallet}` : "❌ No wallet found."
@@ -124,7 +183,7 @@ bot.on("callback_query", async (query) => {
       bot.sendMessage(chatId, "Send your *new* TON wallet address to update.", {
         parse_mode: "Markdown",
       });
-      bot.once("message", (msg) => {
+      bot.once("message", async (msg) => {
         if (msg.from.username !== username) {
           bot.sendMessage(
             chatId,
@@ -133,19 +192,17 @@ bot.on("callback_query", async (query) => {
           return;
         }
         const newWallet = msg.text.trim();
-        const users = getUsers();
-        if (users[`@${username}`]) {
-          fs.writeFileSync(
-            filePath,
-            JSON.stringify(
-              {
-                ...users,
-                [`@${username}`]: newWallet,
-              },
-              null,
-              2
-            )
+        try {
+          await saveUser(username, newWallet);
+          bot.sendMessage(chatId, 'Updated your wallet to: ' + newWallet);
+        } catch (error) {
+          console.error("Error updating wallet:", error);
+          bot.sendMessage(
+            chatId,
+            "❌ Something went wrong while updating your wallet. Please try again later."
           );
+          return;
+          
         }
         bot.sendMessage(
           chatId,
@@ -155,13 +212,19 @@ bot.on("callback_query", async (query) => {
       break;
 
     case "delete":
-      const users = getUsers();
-      if (users[`@${username}`]) {
-        delete users[`@${username}`];
-        fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-        bot.sendMessage(chatId, "🗑️ Your wallet has been deleted.");
-      } else {
-        bot.sendMessage(chatId, "❌ No wallet to delete.");
+      try {
+        const wallet = await getWallet(username);
+        if (!wallet) {
+          bot.sendMessage(chatId, "❌ No wallet found to delete.");
+          return;
+        }
+        else {
+          await deleteWallet(username);
+          bot.sendMessage(chatId, "✅ Your wallet has been deleted successfully.");
+        }
+      } catch (error) {
+        bot.sendMessage(chatId, "❌ Error deleting wallet. Please try again later.");
+        console.error("Error deleting wallet:", error);
       }
       break;
 
