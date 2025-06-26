@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { IoWalletSharp } from "react-icons/io5";
 import { useTonContext } from "../context/TonContext";
-import {
-  TonConnectButton,
-  useTonWallet,
-} from "@tonconnect/ui-react";
+import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 import { getWalletBalance, getTransactions } from "../services/TonServices";
+import ToggleTheme from "./ThemeToggle";
 
 const Navbar = () => {
   const { setBalance, setTrxHistory } = useTonContext();
@@ -53,14 +51,19 @@ const Navbar = () => {
     fetchBalance();
     fetchHistory();
   }, [wallet, setBalance, setTrxHistory]);
-  
+
   return (
     <div className="p-3 flex justify-between items-center shadow-md">
       <div className="flex items-center">
         <IoWalletSharp className="text-[#3390ec]" />
-        <h1 className="font-semibold px-2 text-[12px] md:text-[24px]">TON MicroPay Wallet</h1>
+        <h1 className="font-semibold px-2 text-[12px] md:text-[24px]">
+          TON MicroPay Wallet
+        </h1>
       </div>
-      <TonConnectButton className="text-xs" />
+      <div className="flex items-center gap-2">
+        <ToggleTheme />
+        <TonConnectButton className="text-xs" />
+      </div>
     </div>
   );
 };

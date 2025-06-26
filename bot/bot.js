@@ -3,9 +3,19 @@ const TelegramBot = require("node-telegram-bot-api");
 const { getWallet, getUsers } = require("./services/userStore");
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const registerCommand = require("./commands/register");
+const checkBalance = require("./services/checkBalance");
 const fs = require("fs");
 const path = require("path");
 const filePath = path.join(__dirname, "services/data/users.json");
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3000
+
+app.get("/", (req, res) => { res.send('TONKAMI is live') })
+app.get("/health", (req, res) => { res.send('TONKAMI is healthy') })
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+})
 
 const bot = new TelegramBot(token, { polling: true });
 bot.onText(/\/start/, (msg) => {
@@ -14,9 +24,12 @@ bot.onText(/\/start/, (msg) => {
     "Welcome Tomodachi! type /register to link your TON wallet."
   );
 });
+//the register command for the bot
 bot.onText(/\/register/, (msg) => {
   registerCommand(bot, msg);
 });
+
+//the redirect button to the TG mini app
 bot.onText(/\/app/, (msg) => {
   const chatId = msg.chat.id;
   bot.sendMessage(chatId, "🚀 Open the TON Micro-pay", {
@@ -34,6 +47,8 @@ bot.onText(/\/app/, (msg) => {
     },
   });
 });
+
+//displays the available commands
 bot.onText(/\/menu/, (msg) => {
   const chatId = msg.chat.id;
 
@@ -57,6 +72,33 @@ bot.onText(/\/menu/, (msg) => {
     ...keyboard,
   });
 });
+
+//the checkBalance command
+bot.onText(/\/balance/, async (msg) => {
+  const chat = msg.chat.id;
+  const username = msg.from.username;
+
+  try {
+    if (!username) {
+      bot.sendMessage(
+        chat,
+        "❌ Please set a username in your Telegram settings."
+      );
+      return;
+    }
+    const res = await checkBalance(`@${username}`);
+    bot.sendMessage(
+      chat,
+      "Your wallet balance is: " + (res.balance / 1e9).toFixed(4) + " TON"
+    );
+  } catch (error) {
+    console.error("Error checking balance:", error);
+    bot.sendMessage(chat, "❌ Error checking balance. Please try again later.");
+    return;
+  }
+});
+
+//displays the wallet related commands
 bot.on("callback_query", async (query) => {
   const chatId = query.message.chat.id;
   const username = query.from.username;
