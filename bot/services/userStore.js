@@ -23,7 +23,7 @@ function saveUser(username, wallet) {
 
 function getWallet(username) {
   const users = getUsers();
-  const entry = users.find((u) => u[`@${username}`] === username || u[`@${username}`].toLowerCase() === username.toLowerCase())
+  const entry = users[`@${username}`];
   return entry || null;
 }
 
