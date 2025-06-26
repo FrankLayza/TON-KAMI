@@ -89,7 +89,7 @@ bot.onText(/\/balance/, async (msg) => {
     const res = await checkBalance(`@${username}`);
     bot.sendMessage(
       chat,
-      "Your wallet balance is: " + (res.balance / 1e9).toFixed(4) + " TON"
+      "Your wallet balance is: " + (res / 1e9).toFixed(4) + " TON"
     );
   } catch (error) {
     console.error("Error checking balance:", error);

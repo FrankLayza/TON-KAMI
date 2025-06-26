@@ -1,4 +1,4 @@
-const { getWalletBalance } = require("../../src/services/TonServices");
+const { getWalletBalance } = require("./tonApi");
 const { getWallet } = require("./userStore");
 
 async function checkBalance(username) {
@@ -7,9 +7,9 @@ async function checkBalance(username) {
     throw new Error(`No wallet found for user: ${username}`);
   }
   console.log(userWallet);
-  const balance = await getWalletBalance(userWallet);
-  console.log(balance / 1e9)
-  return balance
+  const result = await getWalletBalance(userWallet);
+  console.log(result.balance / 1e9);
+  return result.balance; // Return just the balance value
 }
 
-module.exports={checkBalance}
+module.exports = { checkBalance };
