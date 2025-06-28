@@ -20,12 +20,12 @@ module.exports = (bot, msg) => {
     { parse_mode: "Markdown" }
   );
 
-  // 👇 Now make reply handler async
+  
   bot.once("message", async (reply) => {
     const wallet = reply.text.trim();
     console.log("Wallet received:", wallet);
 
-    if (wallet.startsWith("/")) {
+    if (wallet.startsWith("/") || !/^[A-Za-z0-9_-]{48}$/.test(wallet)) {
       bot.sendMessage(
         chatId,
         "❌ Please send only a valid TON wallet address, not a command."
