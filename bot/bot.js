@@ -1,8 +1,8 @@
 require("dotenv").config();
 const connectDB = require("./services/data/db");
-connectDB()
+connectDB();
 const TelegramBot = require("node-telegram-bot-api");
-const { getWallet,saveUser, deleteWallet } = require("./services/userStore");
+const { getWallet, saveUser, deleteWallet } = require("./services/userStore");
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const registerCommand = require("./commands/register");
 const checkBalance = require("./services/checkBalance");
@@ -76,7 +76,7 @@ bot.onText(/\/menu/, (msg) => {
   });
 });
 
-console.log('type of checkbalance:', typeof checkBalance);
+console.log("type of checkbalance:", typeof checkBalance);
 //the checkBalance command
 bot.onText(/\/balance/, async (msg) => {
   const chat = msg.chat.id;
@@ -171,13 +171,14 @@ bot.on("callback_query", async (query) => {
       );
       break;
 
-    case "view":
+    case "view": {
       const wallet = await getWallet(username);
       bot.sendMessage(
         chatId,
         wallet ? `💼 Your wallet: ${wallet}` : "❌ No wallet found."
       );
       break;
+    }
 
     case "update":
       bot.sendMessage(chatId, "Send your *new* TON wallet address to update.", {
@@ -194,7 +195,7 @@ bot.on("callback_query", async (query) => {
         const newWallet = msg.text.trim();
         try {
           await saveUser(username, newWallet);
-          bot.sendMessage(chatId, 'Updated your wallet to: ' + newWallet);
+          bot.sendMessage(chatId, "Updated your wallet to: " + newWallet);
         } catch (error) {
           console.error("Error updating wallet:", error);
           bot.sendMessage(
@@ -202,7 +203,6 @@ bot.on("callback_query", async (query) => {
             "❌ Something went wrong while updating your wallet. Please try again later."
           );
           return;
-          
         }
         bot.sendMessage(
           chatId,
@@ -217,13 +217,18 @@ bot.on("callback_query", async (query) => {
         if (!wallet) {
           bot.sendMessage(chatId, "❌ No wallet found to delete.");
           return;
-        }
-        else {
+        } else {
           await deleteWallet(username);
-          bot.sendMessage(chatId, "✅ Your wallet has been deleted successfully.");
+          bot.sendMessage(
+            chatId,
+            "✅ Your wallet has been deleted successfully."
+          );
         }
       } catch (error) {
-        bot.sendMessage(chatId, "❌ Error deleting wallet. Please try again later.");
+        bot.sendMessage(
+          chatId,
+          "❌ Error deleting wallet. Please try again later."
+        );
         console.error("Error deleting wallet:", error);
       }
       break;

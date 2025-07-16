@@ -8,12 +8,11 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
   return (
     <>
-      <div className="font-lexend">
+      <div className="font-lexend px-3 py-4">
         <Navbar />
         <div className="w-[95%] mx-auto ">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <WalletInput />
-            <BalanceCard />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <BalanceCard className="lg:col-span-2" />
             <SendTon />
           </div>
           <TransactionHistory />
