@@ -1,9 +1,15 @@
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
+import Navbar from "@/components/Navbar"
+import BalanceCard from "./components/BalanceCard"
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <BalanceCard />
+      <div>
+        
+      </div>
     </div>
   )
 }
