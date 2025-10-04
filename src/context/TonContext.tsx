@@ -1,0 +1,47 @@
+import {
+  createContext,
+  useContext,
+  useState,
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction,
+} from "react";
+export interface ContextProviderProps {
+  children: ReactNode;
+}
+
+export type TonContextType = {
+  balance: number;
+  setBalance: Dispatch<SetStateAction<number>>;
+  trxHistory: string[];
+  setTrxHistory: Dispatch<SetStateAction<string[]>>;
+};
+
+const TonContext = createContext<TonContextType | undefined>(undefined);
+
+export const TonContextProvider = ({ children }: ContextProviderProps) => {
+  const [balance, setBalance] = useState<number>(0);
+  const [trxHistory, setTrxHistory] = useState<string[]>([]);
+
+  return (
+    <TonContext.Provider
+      value={{
+        balance,
+        setBalance,
+        trxHistory,
+        setTrxHistory,
+      }}
+    >
+      {children}
+    </TonContext.Provider>
+  );
+};
+
+export function useTonContext() {
+  const context = useContext(TonContext);
+  if (context === undefined) {
+    throw new Error("useTon must be defined within the provider");
+  }
+  return context
+}
+// export const useTonContext = () => useContext(TonContext);
