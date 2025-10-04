@@ -2,6 +2,7 @@
 import Navbar from "@/components/Navbar";
 import BalanceCard from "./components/BalanceCard";
 import Send from "./components/Send";
+import TransactionHistory from "./components/TransactionHistory";
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
         <div className="space-y-6 md:space-y-8">
           <BalanceCard />
 
-          <div className="grid grid-cols-1 md:grid-cols-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Send />
+            <TransactionHistory />
           </div>
         </div>
       </div>

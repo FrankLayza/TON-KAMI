@@ -18,12 +18,12 @@ export default function BalanceCard() {
 
           <div className="flex flex-wrap gap-5 items-center">
             <div>
-              <p>USD VALUE</p>
-              <p>$2222</p>
+              <p className="text-sm text-muted-foreground mb-1">USD VALUE</p>
+              <p className="text-xl font-semibold">$2222</p>
             </div>
             <div>
-              <p>24h change</p>
-              <p>-3.22%</p>
+              <p className="text-sm text-muted-foreground mb-1">24h change</p>
+              <p className="text-xl font-semibold">-3.22%</p>
             </div>
           </div>
         </div>

@@ -19,8 +19,15 @@ export default function Send() {
           <Label>Recipient Address</Label>
           <Input
             type="number"
+            min={0.001}
+            max={0.1}
+            placeholder="Max 0.1 TON"
           />
         </div>
+
+        <Button className="w-full cursor-pointer">
+            Send
+        </Button>
       </CardContent>
     </Card>
   );
