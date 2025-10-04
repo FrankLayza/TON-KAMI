@@ -25,8 +25,12 @@ export default function Send() {
           />
         </div>
 
-        <Button className="w-full cursor-pointer">
-            Send
+        <Button
+          className="w-full font-medium cursor-pointer 
+        bg-secondary-accent text-secondary-accent-foreground 
+        hover:bg-secondary-accent/90"
+        >
+          Send
         </Button>
       </CardContent>
     </Card>
