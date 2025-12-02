@@ -6,6 +6,8 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
+import type { Events } from "@/lib/types";
+
 export interface ContextProviderProps {
   children: ReactNode;
 }
@@ -13,15 +15,15 @@ export interface ContextProviderProps {
 export type TonContextType = {
   balance: number;
   setBalance: Dispatch<SetStateAction<number>>;
-  trxHistory: string[];
-  setTrxHistory: Dispatch<SetStateAction<string[]>>;
+  trxHistory: Events[];
+  setTrxHistory: Dispatch<SetStateAction<Events[]>>;
 };
 
 const TonContext = createContext<TonContextType | undefined>(undefined);
 
 export const TonContextProvider = ({ children }: ContextProviderProps) => {
   const [balance, setBalance] = useState<number>(0);
-  const [trxHistory, setTrxHistory] = useState<string[]>([]);
+  const [trxHistory, setTrxHistory] = useState<Events[]>([]);
 
   return (
     <TonContext.Provider

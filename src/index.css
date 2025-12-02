@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -91,6 +92,10 @@
 @theme inline {
   /* optional: --font-sans, --font-serif, --font-mono if they are applied in the layout.tsx */
   --color-background: var(--background);
+  --font-inter: "Inter", sans-serif;
+  --color-CGBackground: "#0e0e10";
+  --color-CGTextdark: "#a0a49e"; 
+  --color-CGTextlight: "#40443e";
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -141,5 +146,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    @apply font-inter
   }
 }
