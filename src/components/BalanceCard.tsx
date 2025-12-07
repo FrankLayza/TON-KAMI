@@ -17,7 +17,7 @@ export default function BalanceCard() {
             <p className="text-sm text-muted-foreground mb-2">Total Balance</p>
             <div className="flex items-baseline gap-3 flex-wrap">
               {open ? <h2 className="text-4xl md:text-3xl font-semibold tracking-tight">
-                {balance && typeof balance === "number" ? balance : 0}
+                {balance && typeof balance === "number" ? balance.toFixed(4) : 0}
               </h2> : 
                 <h2 className="text-3xl md:text-2xl font-semibold tracking-tight">*********</h2>
               }
@@ -33,7 +33,7 @@ export default function BalanceCard() {
           <div className="flex flex-wrap gap-5 items-center mt-3">
             <div>
               <p className="text-sm text-muted-foreground mb-1">USD VALUE</p>
-              <p className="text-xl font-semibold">{usdPriceOfTon}</p>
+              <p className="text-xl font-semibold">{usdPriceOfTon.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">24h change</p>
