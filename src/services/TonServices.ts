@@ -1,56 +1,57 @@
 import type { Events } from "@/lib/types";
+
 export type WalletDetailsType = {
   balance: number;
   address: string;
 };
 
-const TON_URL = import.meta.env.VITE_TON_TESTNET_URL;
-const TON_API = import.meta.env.VITE_TON_TESTNET_API;
+/**
+ * Helper function to route requests through your Vercel Proxy
+ * @param path - The specific TON API endpoint (e.g., "v2/accounts/EQ...")
+ * @param options - Fetch options (method, body, etc.)
+ */
+async function fetchFromProxy(path: string, options: RequestInit = {}) {
+  try {
+    const encodedPath = encodeURIComponent(path);
 
-if (!TON_API || !TON_URL) {
-  throw new Error("Missing TON API env vars");
+    const res = await fetch(`/api/ton-proxy?path=${encodedPath}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      console.error(`Proxy Error Response:`, errorData);
+      throw new Error(
+        `Proxy Error: ${res.status} ${res.statusText} - ${
+          errorData?.error || "Unknown error"
+        }`
+      );
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(`Proxy Request failed for path: ${path}`, error);
+    throw error;
+  }
 }
-
-const header = {
-  Authorization: `Bearer ${TON_API}`,
-  "Content-Type": "application/json",
-};
 
 export async function getWalletBalance(
   address: string
 ): Promise<WalletDetailsType> {
-  try {
-    const res = await fetch(`${TON_URL}/v2/accounts/${address}`, {
-      headers: header,
-    });
-    if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error("Wallet Balance fetch failed", error);
-    throw error;
-  }
+  return fetchFromProxy(`v2/accounts/${address}`);
 }
 
 export async function getTransactionHistory(
   address: string
 ): Promise<Events[]> {
   try {
-    const baseUrl = TON_URL.replace(/\/$/, "");
-    const res = await fetch(
-      `${baseUrl}/v2/accounts/${address}/events?limit=100`,
-      {
-        headers: header,
-      }
+    const data = await fetchFromProxy(
+      `v2/accounts/${address}/events?limit=100`
     );
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
-
-    const data = await res.json();
     return Array.isArray(data) ? data : data.events || data.data || [];
   } catch (error) {
     console.error("Error fetching Transaction History", error);
@@ -60,21 +61,11 @@ export async function getTransactionHistory(
 
 /**
  * Estimates the network fee for a TON transaction
- * TON network fees are typically:
- * - Simple transfer: ~0.01-0.02 TON
- * - With comment: ~0.02-0.03 TON
- * - Complex smart contract: ~0.03-0.05 TON
- *
- * This is a conservative estimate. Actual fees may vary based on network conditions.
+ * (This logic is client-side math and remains unchanged)
  */
 export function estimateTransactionFee(hasComment: boolean = false): number {
-  // Base fee for simple transfer
   const baseFee = 0.015; // ~0.015 TON
-
-  // Additional fee if transaction includes a comment
   const commentFee = hasComment ? 0.01 : 0;
-
-  // Small buffer for network variability
   const buffer = 0.005;
 
   return baseFee + commentFee + buffer;
